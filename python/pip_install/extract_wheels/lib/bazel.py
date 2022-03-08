@@ -243,22 +243,25 @@ def generate_requirements_file_contents(repo_name: str, targets: Iterable[str]) 
         all_whl_requirements = [{whl_requirement_labels}]
 
         def requirement(name):
+            fail("The 'requirement' macro is disabled in favour of our own 'requirement' macro. See http://go/bazel/python#consuming-pip-dependencies")
+
+        def _requirement(name):
            name_key = name.replace("-", "_").replace(".", "_").lower()
            return "{repo}//pypi__" + name_key
 
         def whl_requirement(name):
-            return requirement(name) + ":{whl_file_label}"
+            return _requirement(name) + ":{whl_file_label}"
 
         def data_requirement(name):
-            return requirement(name) + ":{data_label}"
+            return _requirement(name) + ":{data_label}"
 
         def dist_info_requirement(name):
-            return requirement(name) + ":{dist_info_label}"
+            return _requirement(name) + ":{dist_info_label}"
 
         def entry_point(pkg, script = None):
             if not script:
                 script = pkg
-            return requirement(pkg) + ":{entry_point_prefix}_" + script
+            return _requirement(pkg) + ":{entry_point_prefix}_" + script
 
         def install_deps():
             fail("install_deps() only works if you are creating an incremental repo. Did you mean to use pip_parse()?")
