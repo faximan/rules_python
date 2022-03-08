@@ -150,6 +150,7 @@ def generate_build_file_contents(
         set(
             [
                 "*.whl",
+                "**/*dist-info/RECORD",
                 "**/__pycache__/**",
                 "**/* *",
                 "**/*.py",
