@@ -159,6 +159,8 @@ def _pip_repository_impl(rctx):
             "--annotations",
             annotations_file,
         ]
+        if rctx.attr.constraints:
+            args += ["--constraints", rctx.path(rctx.attr.constraints)]
 
         args += ["--python_interpreter", _get_python_interpreter_attr(rctx)]
         if rctx.attr.python_interpreter_target:
@@ -279,6 +281,10 @@ For incremental mode the packages will be of the form
 pip_repository_attrs = {
     "annotations": attr.string_dict(
         doc = "Optional annotations to apply to packages",
+    ),
+    "constraints": attr.label(
+        allow_single_file = True,
+        doc = "A 'constraints.txt' pip constraints file.",
     ),
     "incremental": attr.bool(
         default = False,
