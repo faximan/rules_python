@@ -53,7 +53,7 @@ def _resolve_python_interpreter(rctx):
 
     if rctx.attr.python_interpreter_target != None:
         target = rctx.attr.python_interpreter_target
-        python_interpreter = rctx.path(target)
+        python_interpreter = rctx.path(Label(target))
     else:
         if "/" not in python_interpreter:
             python_interpreter = rctx.which(python_interpreter)
