@@ -109,9 +109,9 @@ def main(
     resolved_requirements_file = _locate(bazel_runfiles, requirements_file)
 
     # Files in the runfiles directory has the following naming schema:
-    # Main repo: __main__/<path_to_file>
+    # Main repo: _main/<path_to_file>
     # External repo: <workspace name>/<path_to_file>
-    # We want to strip both __main__ and <workspace name> from the absolute prefix
+    # We want to strip both _main and <workspace name> from the absolute prefix
     # to keep the requirements lock file agnostic.
     repository_prefix = requirements_file[: requirements_file.index("/") + 1]
     absolute_path_prefix = resolved_requirements_file[
@@ -123,7 +123,6 @@ def main(
     # from the execution root.
     # Note: Windows cannot reference generated files without runfiles support enabled.
     srcs_relative = [src[len(repository_prefix) :] for src in srcs]
-    requirements_file_relative = requirements_file[len(repository_prefix) :]
 
     # Before loading click, set the locale for its parser.
     # If it leaks through to the system setting, it may fail:
@@ -160,7 +159,7 @@ def main(
     os.environ["PIP_CONFIG_FILE"] = os.getenv("PIP_CONFIG_FILE") or os.devnull
 
     argv.append(
-        f"--output-file={requirements_file_relative if UPDATE else requirements_out}"
+        f"--output-file={resolved_requirements_file if UPDATE else requirements_out}"
     )
     argv.extend(
         (src_relative if Path(src_relative).exists() else resolved_src)
@@ -169,17 +168,12 @@ def main(
     argv.extend(extra_args)
 
     if UPDATE:
-        print("Updating " + requirements_file_relative)
-
-        # Make sure the output file for pip_compile exists. It won't if we are on Windows and --enable_runfiles is not set.
-        if not os.path.exists(requirements_file_relative):
-            os.makedirs(os.path.dirname(requirements_file_relative), exist_ok=True)
-            shutil.copy(resolved_requirements_file, requirements_file_relative)
+        print("Updating " + resolved_requirements_file)
 
         if "BUILD_WORKSPACE_DIRECTORY" in os.environ:
             workspace = os.environ["BUILD_WORKSPACE_DIRECTORY"]
-            requirements_file_tree = os.path.join(workspace, requirements_file_relative)
-            absolute_output_file = Path(requirements_file_relative).absolute()
+            requirements_file_tree = os.path.join(workspace, resolved_requirements_file)
+            absolute_output_file = Path(resolved_requirements_file).absolute()
             # In most cases, requirements_file will be a symlink to the real file in the source tree.
             # If symlinks are not enabled (e.g. on Windows), then requirements_file will be a copy,
             # and we should copy the updated requirements back to the source tree.
@@ -190,10 +184,10 @@ def main(
                     )
                 )
         cli(argv, standalone_mode = False)
-        requirements_file_relative_path = Path(requirements_file_relative)
-        content = requirements_file_relative_path.read_text()
+        resolved_requirements_file_path = Path(resolved_requirements_file)
+        content = resolved_requirements_file_path.read_text()
         content = content.replace(absolute_path_prefix, "")
-        requirements_file_relative_path.write_text(content)
+        resolved_requirements_file_path.write_text(content)
     else:
         # cli will exit(0) on success
         try:
