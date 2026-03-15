@@ -7,7 +7,7 @@ project = "rules_python"
 copyright = "2023, The Bazel Authors"
 author = "Bazel"
 
-# NOTE: These are overriden by -D flags via --//sphinxdocs:extra_defines
+# NOTE: These are overriden by -D flags via --@sphinxdocs//sphinxdocs:extra_defines
 version = "0.0.0"
 release = version
 
@@ -139,7 +139,10 @@ intersphinx_mapping = {
 
 # --- Extlinks configuration
 extlinks = {
-    "gh-issue": (f"https://github.com/bazel-contrib/rules_python/issues/%s", "#%s issue"),
+    "gh-issue": (
+        f"https://github.com/bazel-contrib/rules_python/issues/%s",
+        "#%s issue",
+    ),
     "gh-path": (f"https://github.com/bazel-contrib/rules_python/tree/main/%s", "%s"),
     "gh-pr": (f"https://github.com/bazel-contrib/rules_python/pull/%s", "#%s PR"),
 }
