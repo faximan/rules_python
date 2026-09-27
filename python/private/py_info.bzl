@@ -656,6 +656,7 @@ def _PyInfoBuilder_new():
         imports = builders.DepsetBuilder(),
         merge = lambda *a, **k: _PyInfoBuilder_merge(self, *a, **k),
         merge_all = lambda *a, **k: _PyInfoBuilder_merge_all(self, *a, **k),
+        merge_build_time = lambda *a, **k: _PyInfoBuilder_merge_build_time(self, *a, **k),
         merge_has_py2_only_sources = lambda *a, **k: _PyInfoBuilder_merge_has_py2_only_sources(self, *a, **k),
         merge_has_py3_only_sources = lambda *a, **k: _PyInfoBuilder_merge_has_py3_only_sources(self, *a, **k),
         merge_target = lambda *a, **k: _PyInfoBuilder_merge_target(self, *a, **k),
@@ -857,6 +858,37 @@ def _PyInfoBuilder_merge_all(self, transitive, *, direct = []):
 
     return self
 
+def _PyInfoBuilder_merge_build_time(self, *infos, direct = []):
+    """Merge build-time fields from other PyInfos into this PyInfo.
+
+    Only build-time relevant fields (such as `pyi_files`) are merged, excluding
+    runtime fields like `imports` and `transitive_sources`.
+
+    :::{versionadded} VERSION_NEXT_FEATURE
+    :::
+
+    Args:
+        self: implicitly added.
+        *infos: {type}`PyInfo` objects to merge in, but only merge in their
+            information into this object's transitive fields.
+        direct: {type}`list[PyInfo]` objects to merge in, but also merge their
+            direct fields into this object's direct fields.
+
+    Returns:
+        {type}`PyInfoBuilder` self
+    """
+    for info in direct:
+        # BuiltinPyInfo doesn't have this field
+        if hasattr(info, "direct_pyi_files"):
+            self.direct_pyi_files.add(info.direct_pyi_files)
+
+    for info in direct + list(infos):
+        # BuiltinPyInfo doesn't have this field
+        if hasattr(info, "transitive_pyi_files"):
+            self.transitive_pyi_files.add(info.transitive_pyi_files)
+
+    return self
+
 def _PyInfoBuilder_merge_target(self, target):
     """Merge a target's Python information in this object.
 
@@ -957,6 +989,7 @@ PyInfoBuilder = struct(
     get_uses_shared_libraries = _PyInfoBuilder_get_uses_shared_libraries,
     merge = _PyInfoBuilder_merge,
     merge_all = _PyInfoBuilder_merge_all,
+    merge_build_time = _PyInfoBuilder_merge_build_time,
     merge_has_py2_only_sources = _PyInfoBuilder_merge_has_py2_only_sources,
     merge_has_py3_only_sources = _PyInfoBuilder_merge_has_py3_only_sources,
     merge_target = _PyInfoBuilder_merge_target,

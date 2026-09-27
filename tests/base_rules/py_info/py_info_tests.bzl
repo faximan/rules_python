@@ -124,7 +124,7 @@ def _test_py_info_builder(name):
     )
 
     py_info_targets = {}
-    for n in range(1, 7):
+    for n in range(1, 9):
         py_info_name = "{}_py{}".format(name, n)
         py_info_targets["py{}".format(n)] = py_info_name
         rt_util.helper_target(
@@ -181,6 +181,7 @@ def _test_py_info_builder_impl(env, targets):
 
     builder.merge(targets.py3[PyInfo], direct = [targets.py4[PyInfo]])
     builder.merge_all([targets.py5[PyInfo]], direct = [targets.py6[PyInfo]])
+    builder.merge_build_time(targets.py7[PyInfo], direct = [targets.py8[PyInfo]])
 
     def check(actual):
         subject = py_info_subject(actual, meta = env.expect.meta)
@@ -242,6 +243,7 @@ def _test_py_info_builder_impl(env, targets):
                 "tests/base_rules/py_info/direct.pyi",
                 "tests/base_rules/py_info/py4-direct.pyi",
                 "tests/base_rules/py_info/py6-direct.pyi",
+                "tests/base_rules/py_info/py8-direct.pyi",
             ])
             subject.transitive_pyi_files().contains_exactly([
                 "tests/base_rules/py_info/trans.pyi",
@@ -251,6 +253,8 @@ def _test_py_info_builder_impl(env, targets):
                 "tests/base_rules/py_info/py4-trans.pyi",
                 "tests/base_rules/py_info/py5-trans.pyi",
                 "tests/base_rules/py_info/py6-trans.pyi",
+                "tests/base_rules/py_info/py7-trans.pyi",
+                "tests/base_rules/py_info/py8-trans.pyi",
             ])
 
         if hasattr(actual, "venv_symlinks"):
