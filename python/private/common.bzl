@@ -412,7 +412,7 @@ def create_py_info(
     for target in ctx.attr.pyi_deps:
         # PyInfo may not be present e.g. cc_library rules.
         if PyInfo in target or (BuiltinPyInfo != None and BuiltinPyInfo in target):
-            py_info.merge_build_time(_get_py_info(target))
+            py_info.merge_type_checking(_get_py_info(target))
 
     py_info.transitive_sources.add(required_py_files)
 

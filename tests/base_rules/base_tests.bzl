@@ -105,6 +105,20 @@ def _test_py_info_populated_impl(env, target):
         "{package}/test_py_info_populated_subject.py",
     ])
 
+    tc_info = info.type_checking_info()
+    tc_info.transitive_sources().contains_exactly([
+        "{package}/lib2.py",
+    ])
+    tc_info.transitive_original_sources().contains_exactly([
+        "{package}/lib2.py",
+    ])
+    tc_info.imports().contains_exactly([
+        "{}/{}/lib2_import".format(env.ctx.workspace_name, target.label.package),
+    ])
+    tc_info.transitive_pyi_files().contains_exactly([
+        "{package}/lib2.pyi",
+    ])
+
 _tests.append(_test_py_info_populated)
 
 def _py_info_propagation_setup(name, config, produce_py_info_rule, test_impl):
