@@ -307,7 +307,8 @@ Dependencies providing type definitions the library needs.
 
 These are dependencies that satisfy imports guarded by `typing.TYPE_CHECKING`.
 These are build-time only dependencies and not included as part of a runnable
-program (packaging rules may include them, however).
+program (packaging rules may include them, however). Runtime inclusion can be
+configured using {obj}`--//python/config_settings:pyi_deps_to_runfiles`.
 
 :::{versionadded} 1.1.0
 :::
