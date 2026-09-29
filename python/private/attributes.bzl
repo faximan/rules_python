@@ -367,6 +367,10 @@ Allowed `.pyc` and directory inputs in `srcs`.
             default = labels.PRECOMPILE_SOURCE_RETENTION,
             providers = [BuildSettingInfo],
         ),
+        "_pyi_deps_to_runfiles_flag": lambda: attrb.Label(
+            default = labels.PYI_DEPS_TO_RUNFILES,
+            providers = [BuildSettingInfo],
+        ),
         # Force enabling auto exec groups, see
         # https://bazel.build/extending/auto-exec-groups#how-enable-particular-rule
         "_use_auto_exec_groups": lambda: attrb.Bool(
