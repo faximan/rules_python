@@ -108,11 +108,19 @@ ValidateTestMainFlag = FlagEnum(
     is_enabled = _ValidateTestMainFlag_is_enabled,
 )
 
+# Bazel compilation modes (e.g. from `ctx.var["COMPILATION_MODE"]`).
+# buildifier: disable=name-conventions
+CompilationMode = enum(
+    DBG = "dbg",
+    FASTBUILD = "fastbuild",
+    OPT = "opt",
+)
+
 def _PyiDepsToRunfilesFlag_is_enabled(ctx):
     value = ctx.attr._pyi_deps_to_runfiles_flag[BuildSettingInfo].value
     if value == PyiDepsToRunfilesFlag.AUTO:
         # In 'opt' compilation mode, prune pyi_deps from runtime runfiles.
-        if ctx.var.get("COMPILATION_MODE") == "opt":
+        if ctx.var.get("COMPILATION_MODE") == CompilationMode.OPT:
             return False
         return False
     return value == PyiDepsToRunfilesFlag.YES
